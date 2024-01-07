@@ -1,6 +1,5 @@
 package com.example.onetimemessage.onetimemessage.service;
 
-import com.example.onetimemessage.onetimemessage.entity.MessageEntity;
 import com.example.onetimemessage.onetimemessage.model.MessageModel;
 import com.example.onetimemessage.onetimemessage.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
