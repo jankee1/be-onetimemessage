@@ -1,6 +1,8 @@
 package com.example.onetimemessage.onetimemessage.service;
 
+import com.example.onetimemessage.onetimemessage.entity.MessageEntity;
 import com.example.onetimemessage.onetimemessage.model.MessageModel;
+import com.example.onetimemessage.onetimemessage.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +17,11 @@ public class MessageService {
     private final String SEPARATOR = ",";
 
     private final EmailService emailService;
+    private final MessageRepository messageRepository;
     @Autowired
-    public MessageService(EmailService emailService) {
+    public MessageService(EmailService emailService, MessageRepository messageRepository) {
         this.emailService = emailService;
+        this.messageRepository = messageRepository;
     }
 
     public String insert(MessageModel messageModel) {
@@ -26,6 +30,7 @@ public class MessageService {
         if(email != null && !email.isEmpty()) {
             this.emailService.sendEmail(messageModel.getId(), messageModel.getEmailRecipient());
         }
+        this.messageRepository.save(MessageRepository.mapToEntity(messageModel));
         System.out.println(messageModel);
         return "Inserting message";
     }
