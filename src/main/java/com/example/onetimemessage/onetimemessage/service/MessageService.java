@@ -1,5 +1,6 @@
 package com.example.onetimemessage.onetimemessage.service;
 
+import com.example.onetimemessage.onetimemessage.entity.MessageEntity;
 import com.example.onetimemessage.onetimemessage.model.MessageModel;
 import com.example.onetimemessage.onetimemessage.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,8 +37,9 @@ public class MessageService {
         return "Inserting message";
     }
 
-    public String getOne(String id) {
-        return "hello world " + id;
+    public Optional<MessageEntity> getOne(UUID id) {
+        System.out.println(id);
+        return this.messageRepository.findById(id);
     }
 
     private String splitIntoChunks(String str) {
