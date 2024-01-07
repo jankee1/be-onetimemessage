@@ -1,8 +1,12 @@
 package com.example.onetimemessage.onetimemessage.controller;
+import com.example.onetimemessage.onetimemessage.entity.MessageEntity;
 import com.example.onetimemessage.onetimemessage.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @Validated
 @RestController
@@ -17,7 +21,7 @@ public class MessageController {
     }
 
     @GetMapping("/{id}")
-    public String getOne(@PathVariable String id) {
+    public Optional<MessageEntity> getOne(@PathVariable UUID id) {
         return this.messageService.getOne(id);
     }
 

@@ -1,11 +1,15 @@
 package com.example.onetimemessage.onetimemessage.service;
 
+import com.example.onetimemessage.onetimemessage.entity.MessageEntity;
 import com.example.onetimemessage.onetimemessage.model.MessageModel;
+import com.example.onetimemessage.onetimemessage.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -15,9 +19,11 @@ public class MessageService {
     private final String SEPARATOR = ",";
 
     private final EmailService emailService;
+    private final MessageRepository messageRepository;
     @Autowired
-    public MessageService(EmailService emailService) {
+    public MessageService(EmailService emailService, MessageRepository messageRepository) {
         this.emailService = emailService;
+        this.messageRepository = messageRepository;
     }
 
     public String insert(MessageModel messageModel) {
@@ -26,12 +32,14 @@ public class MessageService {
         if(email != null && !email.isEmpty()) {
             this.emailService.sendEmail(messageModel.getId(), messageModel.getEmailRecipient());
         }
+        this.messageRepository.save(MessageRepository.mapToEntity(messageModel));
         System.out.println(messageModel);
         return "Inserting message";
     }
 
-    public String getOne(String id) {
-        return "hello world " + id;
+    public Optional<MessageEntity> getOne(UUID id) {
+        System.out.println(id);
+        return this.messageRepository.findById(id);
     }
 
     private String splitIntoChunks(String str) {
