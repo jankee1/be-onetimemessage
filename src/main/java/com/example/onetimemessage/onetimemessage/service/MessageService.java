@@ -6,18 +6,13 @@ import com.example.onetimemessage.onetimemessage.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class MessageService {
-
-    private final int ONE_CHUNK_LENGTH = 10;
-    private final String SEPARATOR = ",";
-
     private final EmailService emailService;
     private final MessageRepository messageRepository;
     @Autowired
@@ -26,41 +21,37 @@ public class MessageService {
         this.messageRepository = messageRepository;
     }
 
-    public String insert(MessageModel messageModel) {
-        messageModel.setMesssageBody(this.splitIntoChunks(messageModel.getMesssageBody()));
+    public void insert(MessageModel messageModel) throws Exception {
+        SecretKey newSecretKey = EncryptionService.generateSecretKey();
+        SecretKey secretKeyWithSalt = EncryptionService.getSecretKeyWithSalt(newSecretKey);
+
+        messageModel.setSecretKey(newSecretKey);
+        messageModel.setMesssageBody(EncryptionService.encrypt(messageModel.getMesssageBody(), secretKeyWithSalt));
+
         String email = messageModel.getEmailRecipient();
-        if(email != null && !email.isEmpty()) {
+        if(!email.isEmpty()) {
             this.emailService.sendEmail(messageModel.getId(), messageModel.getEmailRecipient());
         }
         this.messageRepository.save(MessageRepository.mapToEntity(messageModel));
-        System.out.println(messageModel);
-        return "Inserting message";
     }
 
-    public Optional<MessageEntity> getOne(UUID id) {
-        System.out.println(id);
-        return this.messageRepository.findById(id);
-    }
+    public Optional<MessageModel> getOne(UUID id) throws Exception {
+        Optional<MessageEntity> message = this.messageRepository.findById(id);
 
-    private String splitIntoChunks(String str) {
-        List<String> strSplited = new ArrayList<>();
-        int iterationCounter = (int)Math.round(Math.ceil(Float.parseFloat(String.valueOf(str.length())) / this.ONE_CHUNK_LENGTH));
+        return Optional.ofNullable(message.map(entity -> {
+            SecretKey newSecretKey = entity.getSecretKey();
+            SecretKey secretKeyWithSalt = EncryptionService.getSecretKeyWithSalt(newSecretKey);
+            String messageBody = null;
 
-        for(int i = 0; i < iterationCounter ; i++) {
-            String chunk;
-            if(str.length() <= this.ONE_CHUNK_LENGTH) {
-                chunk = str;
-            } else {
-                chunk = str.substring(0, this.ONE_CHUNK_LENGTH);
-                str = str.substring(this.ONE_CHUNK_LENGTH);
+            try {
+                messageBody = EncryptionService.decrypt(entity.getMesssageBody(), secretKeyWithSalt);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-            strSplited.add(this.hashMessage(chunk));
-        }
 
-        return strSplited.stream().collect(Collectors.joining(this.SEPARATOR));
-    }
-
-    private String hashMessage(String message) {
-        return message;
+            entity.setMesssageBody(messageBody);
+//            this.messageRepository.deleteById(entity.getId());
+            return MessageRepository.mapToModel(entity);
+        }).orElse(null));
     }
 }

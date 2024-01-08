@@ -2,6 +2,7 @@ package com.example.onetimemessage.onetimemessage.controller;
 import com.example.onetimemessage.onetimemessage.model.MessageModel;
 
 import com.fasterxml.jackson.annotation.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
@@ -14,17 +15,21 @@ import java.util.UUID;
 
 public class MessageDto {
 
+    @NotNull
     @Length(min = 3, max = 700)
     @JsonProperty("messsageBody")
     final String messsageBody;
 
-//    @Length(max = 255)
     @JsonProperty("emailRecipient")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     Optional<String> emailRecipient;
 
     static MessageModel toModel(MessageDto dto) {
-        return new MessageModel(UUID.randomUUID() ,dto.messsageBody, String.valueOf(dto.emailRecipient));
+        return new MessageModel(UUID.randomUUID() ,dto.messsageBody, null, String.valueOf(dto.emailRecipient));
     }
-    static void toResponseObject() {}
-
+    static Optional<MessageDto> toResponseObject(Optional<MessageModel> givenModel) {
+        return givenModel.map(model -> {
+            return new MessageDto(model.getMesssageBody(), null);
+        } );
+    }
 }

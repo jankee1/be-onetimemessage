@@ -1,6 +1,7 @@
 package com.example.onetimemessage.onetimemessage.controller;
-import com.example.onetimemessage.onetimemessage.entity.MessageEntity;
+import com.example.onetimemessage.onetimemessage.model.MessageModel;
 import com.example.onetimemessage.onetimemessage.service.MessageService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -21,12 +22,13 @@ public class MessageController {
     }
 
     @GetMapping("/{id}")
-    public Optional<MessageEntity> getOne(@PathVariable UUID id) {
-        return this.messageService.getOne(id);
+    public Optional<MessageDto> getOne(@PathVariable UUID id) throws Exception {
+        Optional<MessageModel> model = this.messageService.getOne(id);
+        return MessageDto.toResponseObject(model);
     }
 
     @PostMapping
-    public String create(@RequestBody MessageDto dto) {
-        return this.messageService.insert(MessageDto.toModel(dto));
+    public void create(@Valid @RequestBody MessageDto dto) throws Exception {
+        this.messageService.insert(MessageDto.toModel(dto));
     }
 }
