@@ -15,11 +15,14 @@ import java.util.UUID;
 public class MessageEntity {
     @Id
     private UUID id;
+
     @Column(nullable = false)
-    private String messsageBody;
+    private String messageBody;
     private String emailRecipient;
+
     @Column(nullable = false)
     private SecretKey secretKey;
+
     @CreatedDate
     private LocalDateTime createdAt;
 }

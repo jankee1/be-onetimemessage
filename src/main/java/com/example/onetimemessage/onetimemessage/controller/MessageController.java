@@ -28,7 +28,7 @@ public class MessageController {
     }
 
     @PostMapping
-    public void create(@Valid @RequestBody MessageDto dto) throws Exception {
-        this.messageService.insert(MessageDto.toModel(dto));
+    public MessageDto create(@Valid @RequestBody MessageDto dto) throws Exception {
+        return this.messageService.insert(MessageDto.toModel(dto));
     }
 }
