@@ -10,7 +10,7 @@ import java.util.UUID;
 @Data
 public class MessageModel {
     UUID id;
-    String messsageBody;
+    String messageBody;
     SecretKey secretKey;
     String emailRecipient;
 }

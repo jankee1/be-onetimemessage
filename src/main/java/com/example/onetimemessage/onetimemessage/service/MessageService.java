@@ -1,5 +1,6 @@
 package com.example.onetimemessage.onetimemessage.service;
 
+import com.example.onetimemessage.onetimemessage.controller.MessageDto;
 import com.example.onetimemessage.onetimemessage.entity.MessageEntity;
 import com.example.onetimemessage.onetimemessage.model.MessageModel;
 import com.example.onetimemessage.onetimemessage.repository.MessageRepository;
@@ -7,32 +8,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class MessageService {
-    private final EmailService emailService;
+
     private final MessageRepository messageRepository;
     @Autowired
-    public MessageService(EmailService emailService, MessageRepository messageRepository) {
-        this.emailService = emailService;
+    public MessageService(MessageRepository messageRepository) {
         this.messageRepository = messageRepository;
     }
 
-    public void insert(MessageModel messageModel) throws Exception {
+    public MessageDto insert(MessageModel messageModel) throws Exception {
         SecretKey newSecretKey = EncryptionService.generateSecretKey();
         SecretKey secretKeyWithSalt = EncryptionService.getSecretKeyWithSalt(newSecretKey);
-
+        Optional<Boolean> emailSentSuccessfully = null;
         messageModel.setSecretKey(newSecretKey);
-        messageModel.setMesssageBody(EncryptionService.encrypt(messageModel.getMesssageBody(), secretKeyWithSalt));
+        messageModel.setMessageBody(EncryptionService.encrypt(messageModel.getMessageBody(), secretKeyWithSalt));
 
-        String email = messageModel.getEmailRecipient();
-        if(!email.isEmpty()) {
-            this.emailService.sendEmail(messageModel.getId(), messageModel.getEmailRecipient());
-        }
         this.messageRepository.save(MessageRepository.mapToEntity(messageModel));
+
+        if(!messageModel.getEmailRecipient().isEmpty()) {
+            Email email = new Email(messageModel.getId(), messageModel.getEmailRecipient());
+            emailSentSuccessfully = Optional.ofNullable(email.send());
+        }
+
+        return new MessageDto(Optional.of(messageModel.getId()), null, null, emailSentSuccessfully);
     }
 
     public Optional<MessageModel> getOne(UUID id) throws Exception {
@@ -44,12 +45,12 @@ public class MessageService {
             String messageBody = null;
 
             try {
-                messageBody = EncryptionService.decrypt(entity.getMesssageBody(), secretKeyWithSalt);
+                messageBody = EncryptionService.decrypt(entity.getMessageBody(), secretKeyWithSalt);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
 
-            entity.setMesssageBody(messageBody);
+            entity.setMessageBody(messageBody);
 //            this.messageRepository.deleteById(entity.getId());
             return MessageRepository.mapToModel(entity);
         }).orElse(null));
