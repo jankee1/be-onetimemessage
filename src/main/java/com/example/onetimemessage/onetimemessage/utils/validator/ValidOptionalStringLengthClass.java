@@ -1,6 +1,6 @@
 package com.example.onetimemessage.onetimemessage.utils.validator;
 
-import com.example.onetimemessage.onetimemessage.Config;
+import com.example.onetimemessage.onetimemessage.config.Config;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

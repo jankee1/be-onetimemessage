@@ -1,6 +1,6 @@
 package com.example.onetimemessage.onetimemessage.service;
 
-import com.example.onetimemessage.onetimemessage.Config;
+import com.example.onetimemessage.onetimemessage.config.Config;
 
 import javax.crypto.*;
 import javax.crypto.spec.GCMParameterSpec;
