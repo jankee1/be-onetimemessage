@@ -1,4 +1,4 @@
-package com.example.onetimemessage.onetimemessage;
+package com.example.onetimemessage.onetimemessage.config;
 
 import lombok.Getter;
 import org.springframework.stereotype.Component;
