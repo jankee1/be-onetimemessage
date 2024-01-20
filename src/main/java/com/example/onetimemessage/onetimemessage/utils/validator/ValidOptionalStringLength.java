@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidOptionalStringLength {
-    String message() default "Invalid optional string";
+    String message() default "Invalid string custom validation";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

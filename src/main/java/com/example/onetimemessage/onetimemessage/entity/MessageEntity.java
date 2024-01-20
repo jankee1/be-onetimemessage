@@ -1,7 +1,10 @@
 package com.example.onetimemessage.onetimemessage.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.crypto.SecretKey;

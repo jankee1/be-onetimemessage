@@ -4,12 +4,12 @@ import com.example.onetimemessage.onetimemessage.Config;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-import java.util.Optional;
-public class ValidOptionalStringLengthClass implements ConstraintValidator<ValidOptionalStringLength, Optional<String>> {
-    private static final Config CONFIG = new Config();
+import java.util.Objects;
 
+public class ValidOptionalStringLengthClass implements ConstraintValidator<ValidOptionalStringLength, String> {
+    private static final Config CONFIG = new Config();
     @Override
-    public boolean isValid(Optional<String> optionalString, ConstraintValidatorContext context) {
-        return Optional.ofNullable(optionalString).isPresent() && optionalString.map(s -> s.length() <= CONFIG.getMAX_BODY_LENGTH()).orElse(true);
+    public boolean isValid(String optionalString, ConstraintValidatorContext context) {
+        return Objects.nonNull(optionalString) && optionalString.length() <= CONFIG.getMAX_BODY_LENGTH();
     }
 }
