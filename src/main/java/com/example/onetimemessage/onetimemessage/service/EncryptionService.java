@@ -15,7 +15,7 @@ public class EncryptionService {
     private static final int KEY_SIZE_BITS = 128;
     private static final int GCM_NONCE_LENGTH_BYTES = 12;
     private static final String CHARSET_NAME = "UTF-8";
-    private static final  byte[] SECRET_KEY_MESSAGE_BODY_SALT_AS_BYTES = Base64.getDecoder().decode(CONFIG.getMESSAGE_BODY_ENCRYPTION_SALT());
+    private static final byte[] SECRET_KEY_MESSAGE_BODY_SALT_AS_BYTES = Base64.getDecoder().decode(CONFIG.getMESSAGE_BODY_ENCRYPTION_SALT());
 
     public static String encrypt(String textForEncryption, SecretKey secretKey) throws Exception {
         Cipher cipher = Cipher.getInstance(AES_TRANSFORMATION);

@@ -1,42 +1,67 @@
 package com.example.onetimemessage.onetimemessage.controller;
+
 import com.example.onetimemessage.onetimemessage.model.MessageModel;
-
 import com.example.onetimemessage.onetimemessage.utils.validator.ValidOptionalStringLength;
-import com.fasterxml.jackson.annotation.*;
-import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Email;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-import java.util.Optional;
+import java.util.Objects;
 import java.util.UUID;
 
+@NoArgsConstructor(force = true)
 @AllArgsConstructor
-@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Data
 @ToString
-
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MessageDto {
 
     @JsonProperty("id")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    Optional<UUID> id;
+    private UUID id;
 
     @ValidOptionalStringLength
-    @JsonProperty("messsageBody")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    Optional<String> messageBody;
+    @JsonProperty("messageBody")
+    private String messageBody;
 
     @JsonProperty("emailRecipient")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    Optional<String> emailRecipient;
+    @Email
+    private String emailRecipient;
 
     @JsonProperty("emailSentSuccessfully")
-    Optional<Boolean> emailSentSuccessfully;
+    private boolean emailSentSuccessfully;
 
-    static MessageModel toModel(MessageDto dto) {
-        return new MessageModel(UUID.randomUUID() , dto.messageBody.orElse(""), null, dto.emailRecipient.orElse(null));
+    @JsonProperty("order")
+    private int order;
+
+    public static MessageModel toModel(MessageDto dto) {
+        if(dto == null) {
+            return null;
+        }
+        MessageModel model = new MessageModel();
+        model.setMessageBody(dto.messageBody);
+        model.setEmailRecipient(dto.emailRecipient);
+        model.setOrder(dto.order);
+        return model;
     }
-    static Optional<MessageDto> toResponseObject(Optional<MessageModel> givenModel) {
-        return givenModel.map(model -> {
-            return new MessageDto(Optional.ofNullable(model.getId()), Optional.ofNullable(model.getMessageBody()), null, null);
-        } );
+    public static MessageDto toResponseObject(MessageModel model) {
+        if(model == null ) {
+            return null;
+        }
+
+        MessageDto dto = new MessageDto();
+
+        dto.setId(model.getId());
+        dto.setOrder(model.getOrder());
+        dto.setMessageBody(model.getMessageBody());
+        if(Objects.nonNull(model.getEmailSentSuccessfully())) {
+            dto.setEmailSentSuccessfully(model.getEmailSentSuccessfully());
+        }
+        return dto;
     }
 }

@@ -2,15 +2,13 @@ package com.example.onetimemessage.onetimemessage.service;
 
 import com.example.onetimemessage.onetimemessage.Config;
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Component;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @AllArgsConstructor
@@ -18,27 +16,28 @@ public class Email {
     private final UUID id;
     private final String recipient;
     private static final Config CONFIG = new Config();
-    public boolean send() {
+    public boolean send() throws ExecutionException, InterruptedException {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
-        AtomicBoolean emailStatus = new AtomicBoolean(true);
+        AtomicBoolean emailStatus = new AtomicBoolean();
 
-        executorService.submit(() -> {
+        Callable<Boolean> workerCallable = () -> {
             try {
-                Properties properties = this.getPrppertiesWithBasicSettings();
+                Properties properties = this.getPropertiesWithBasicSettings();
                 Session session = this.getSessionWithCredentials(properties);
-
                 Message message = this.getFilledMimeMessage(session, this.id, this.recipient);
                 Transport.send(message);
+                emailStatus.set(true);
             } catch (MessagingException e) {
-                emailStatus.set(false);
                 e.printStackTrace();
             }
-        });
+            return emailStatus.get();
+        };
 
+        Future<Boolean> result = executorService.submit(workerCallable);
         executorService.shutdown();
-        return emailStatus.get();
+        return result.get();
     }
-    private Properties getPrppertiesWithBasicSettings() {
+    private Properties getPropertiesWithBasicSettings() {
         Properties properties = new Properties();
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.starttls.enable", "true");

@@ -10,10 +10,20 @@ import java.util.UUID;
 public interface MessageRepository extends JpaRepository<MessageEntity, UUID> {
 
     static MessageEntity mapToEntity(MessageModel model) {
+        if (model == null) {
+            return null;
+        }
         return new MessageEntity(model.getId(), model.getMessageBody(), model.getEmailRecipient(), model.getSecretKey(), LocalDateTime.now());
     }
 
     static MessageModel mapToModel(MessageEntity entity) {
-        return new MessageModel(entity.getId(), entity.getMessageBody(), null,entity.getEmailRecipient());
+        if(entity == null) {
+            return null;
+        }
+        MessageModel model = new MessageModel();
+        model.setId(entity.getId());
+        model.setMessageBody(entity.getMessageBody());
+        model.setEmailRecipient(entity.getEmailRecipient());
+        return model;
     }
 }
