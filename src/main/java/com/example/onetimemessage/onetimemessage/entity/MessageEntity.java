@@ -19,7 +19,7 @@ public class MessageEntity {
     @Id
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000)
     private String messageBody;
     private String emailRecipient;
 
