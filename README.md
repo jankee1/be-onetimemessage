@@ -1,3 +1,3 @@
 # BeOnetimemessage
 
-Full description of the application is included [here]([../blob/master/LICENSE)](https://github.com/jankee1/fe-onetimemessage)
+Full description of the application is included in FE repository https://github.com/jankee1/fe-onetimemessage
