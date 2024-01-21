@@ -53,11 +53,10 @@ public class MessageDto {
         if(model == null ) {
             return null;
         }
-
         MessageDto dto = new MessageDto();
-
         dto.setId(model.getId());
         dto.setOrder(model.getOrder());
+        dto.setEmailRecipient(model.getEmailRecipient());
         dto.setMessageBody(model.getMessageBody());
         if(Objects.nonNull(model.getEmailSentSuccessfully())) {
             dto.setEmailSentSuccessfully(model.getEmailSentSuccessfully());
