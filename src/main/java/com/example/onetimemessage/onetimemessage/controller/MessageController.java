@@ -29,7 +29,7 @@ public class MessageController {
     }
 
     @PostMapping
-    public ArrayList<MessageDto> create(@RequestBody @Size(min = 1, max = 5) ArrayList<@Valid MessageDto> dto) throws Exception {
+    public ArrayList<MessageDto> create(@RequestBody @Size(min = 1, max = 15) ArrayList<@Valid MessageDto> dto) throws Exception {
         ArrayList<MessageModel> messagesModels = dto.stream().map(MessageDto::toModel)
                         .sorted(Comparator.comparingInt(MessageModel::getOrder))
                         .collect(Collectors.toCollection(ArrayList::new));
