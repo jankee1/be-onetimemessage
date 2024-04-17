@@ -3,7 +3,6 @@ package com.example.onetimemessage.onetimemessage.utils.validator;
 import com.example.onetimemessage.onetimemessage.config.Config;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-
 import java.util.Objects;
 
 public class ValidOptionalStringLengthClass implements ConstraintValidator<ValidOptionalStringLength, String> {

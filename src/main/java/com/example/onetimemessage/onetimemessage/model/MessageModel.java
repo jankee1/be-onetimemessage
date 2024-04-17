@@ -1,8 +1,8 @@
 package com.example.onetimemessage.onetimemessage.model;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.crypto.SecretKey;
 import java.util.UUID;
 

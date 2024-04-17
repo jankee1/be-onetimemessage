@@ -1,7 +1,6 @@
 package com.example.onetimemessage.onetimemessage.service;
 
 import com.example.onetimemessage.onetimemessage.config.Config;
-
 import javax.crypto.*;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -18,13 +17,13 @@ public class EncryptionService {
     private static final byte[] SECRET_KEY_MESSAGE_BODY_SALT_AS_BYTES = Base64.getDecoder().decode(CONFIG.getMESSAGE_BODY_ENCRYPTION_SALT());
 
     public static String encrypt(String textForEncryption, SecretKey secretKey) throws Exception {
-        Cipher cipher = Cipher.getInstance(AES_TRANSFORMATION);
-        byte[] nonce = generateNonce();
+        var cipher = Cipher.getInstance(AES_TRANSFORMATION);
+        var nonce = generateNonce();
 
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, new GCMParameterSpec(KEY_SIZE_BITS, nonce));
 
-        byte[] encryptedBytes = cipher.doFinal(textForEncryption.getBytes(CHARSET_NAME));
-        byte[] combined = new byte[GCM_NONCE_LENGTH_BYTES + encryptedBytes.length];
+        var encryptedBytes = cipher.doFinal(textForEncryption.getBytes(CHARSET_NAME));
+        var combined = new byte[GCM_NONCE_LENGTH_BYTES + encryptedBytes.length];
 
         System.arraycopy(nonce, 0, combined, 0, GCM_NONCE_LENGTH_BYTES);
         System.arraycopy(encryptedBytes, 0, combined, GCM_NONCE_LENGTH_BYTES, encryptedBytes.length);
@@ -33,37 +32,37 @@ public class EncryptionService {
     }
 
     public static String decrypt(String textForDecryption, SecretKey secretKey) throws Exception {
-        byte[] combined = Base64.getDecoder().decode(textForDecryption);
-        byte[] nonce = new byte[GCM_NONCE_LENGTH_BYTES];
-        byte[] encryptedBytes = new byte[combined.length - GCM_NONCE_LENGTH_BYTES];
+        var combined = Base64.getDecoder().decode(textForDecryption);
+        var nonce = new byte[GCM_NONCE_LENGTH_BYTES];
+        var encryptedBytes = new byte[combined.length - GCM_NONCE_LENGTH_BYTES];
 
         System.arraycopy(combined, 0, nonce, 0, GCM_NONCE_LENGTH_BYTES);
         System.arraycopy(combined, GCM_NONCE_LENGTH_BYTES, encryptedBytes, 0, combined.length - GCM_NONCE_LENGTH_BYTES);
 
-        Cipher cipher = Cipher.getInstance(AES_TRANSFORMATION);
+        var cipher = Cipher.getInstance(AES_TRANSFORMATION);
         cipher.init(Cipher.DECRYPT_MODE, secretKey, new GCMParameterSpec(KEY_SIZE_BITS, nonce));
 
-        byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
+        var decryptedBytes = cipher.doFinal(encryptedBytes);
 
         return new String(decryptedBytes, CHARSET_NAME);
     }
 
     private static byte[] generateNonce() {
-        SecureRandom secureRandom = new SecureRandom();
-        byte[] nonce = new byte[GCM_NONCE_LENGTH_BYTES];
+        var secureRandom = new SecureRandom();
+        var nonce = new byte[GCM_NONCE_LENGTH_BYTES];
         secureRandom.nextBytes(nonce);
         return nonce;
     }
 
     static SecretKey generateSecretKey() throws Exception {
-        KeyGenerator keyGenerator = KeyGenerator.getInstance(AES_ALGORITHM);
+        var keyGenerator = KeyGenerator.getInstance(AES_ALGORITHM);
         keyGenerator.init(KEY_SIZE_BITS);
         return keyGenerator.generateKey();
     }
 
     static SecretKey getSecretKeyWithSalt(SecretKey secretKey) {
-        byte[] secretKeyInBytes = secretKey.getEncoded();
-        byte[] finalKey = new byte[SECRET_KEY_MESSAGE_BODY_SALT_AS_BYTES.length + secretKeyInBytes.length];
+        var secretKeyInBytes = secretKey.getEncoded();
+        var finalKey = new byte[SECRET_KEY_MESSAGE_BODY_SALT_AS_BYTES.length + secretKeyInBytes.length];
         System.arraycopy(secretKeyInBytes, 0, finalKey, 0, secretKeyInBytes.length);
         System.arraycopy(SECRET_KEY_MESSAGE_BODY_SALT_AS_BYTES, 0, finalKey, secretKeyInBytes.length, SECRET_KEY_MESSAGE_BODY_SALT_AS_BYTES.length);
         return new SecretKeySpec(finalKey, 0, finalKey.length, AES_ALGORITHM);
