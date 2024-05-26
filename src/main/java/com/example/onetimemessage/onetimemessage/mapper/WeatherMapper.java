@@ -37,6 +37,7 @@ public class WeatherMapper {
                 dto.setDate(dateTime);
                 dtos.add(dto);
             }
+
         } catch (IOException e) {
             System.err.println("Error occurred while parsing JSON: " + e.getMessage());
         }
@@ -44,7 +45,7 @@ public class WeatherMapper {
         return dtos;
     }
 
-    public WeatherModel rawDataToModel(Double minTemp, Double maxTemp, LocalDateTime date) {
+    public WeatherModel rawDataToModel(int minTemp, int maxTemp, LocalDateTime date) {
         var model = new WeatherModel();
 
         model.setMinTemp(minTemp);

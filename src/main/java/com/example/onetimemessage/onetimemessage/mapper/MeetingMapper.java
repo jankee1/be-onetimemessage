@@ -27,8 +27,8 @@ public class MeetingMapper {
 
         entity.setDate(date);
         entity.setCity(cityEntity);
-        entity.setMinTemp(Optional.ofNullable(weather).map(WeatherModel::getMinTemp).orElse(null));
-        entity.setMaxTemp(Optional.ofNullable(weather).map(WeatherModel::getMaxTemp).orElse(null));
+        entity.setMinTemp(Optional.ofNullable(weather).map(WeatherModel::getMinTemp).orElse(0));
+        entity.setMaxTemp(Optional.ofNullable(weather).map(WeatherModel::getMaxTemp).orElse(0));
 
         return entity;
     }

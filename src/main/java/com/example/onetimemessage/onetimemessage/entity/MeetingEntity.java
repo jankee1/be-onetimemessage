@@ -26,10 +26,10 @@ public class MeetingEntity {
     private CityEntity city;
 
     @Column
-    private Double minTemp;
+    private int minTemp;
 
     @Column
-    private Double maxTemp;
+    private int maxTemp;
 
     @Column(nullable = false)
     private LocalDateTime date;
