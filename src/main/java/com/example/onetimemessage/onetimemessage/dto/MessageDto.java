@@ -1,21 +1,18 @@
-package com.example.onetimemessage.onetimemessage.controller;
+package com.example.onetimemessage.onetimemessage.dto;
 
+import com.example.onetimemessage.onetimemessage.model.CityModel;
 import com.example.onetimemessage.onetimemessage.utils.validator.ValidOptionalStringLength;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.validation.constraints.Email;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
-@ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MessageDto {
 
@@ -35,4 +32,10 @@ public class MessageDto {
 
     @JsonProperty("order")
     private int order;
+
+    @JsonProperty("meetingDate")
+    private LocalDateTime meetingDate;
+
+    @JsonProperty("meetingPlace")
+    private CityModel meetingPlace;
 }

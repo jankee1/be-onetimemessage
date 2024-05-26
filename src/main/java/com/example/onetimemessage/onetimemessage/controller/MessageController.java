@@ -1,5 +1,6 @@
 package com.example.onetimemessage.onetimemessage.controller;
 
+import com.example.onetimemessage.onetimemessage.dto.MessageDto;
 import com.example.onetimemessage.onetimemessage.service.MessageService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
