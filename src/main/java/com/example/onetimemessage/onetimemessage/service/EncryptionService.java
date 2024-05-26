@@ -1,24 +1,32 @@
 package com.example.onetimemessage.onetimemessage.service;
 
 import com.example.onetimemessage.onetimemessage.config.Config;
+import org.springframework.stereotype.Service;
+
 import javax.crypto.*;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.SecureRandom;
 import java.util.Base64;
 
+@Service
 public class EncryptionService {
-    private static final Config CONFIG = new Config();
-    private static final String AES_ALGORITHM = "AES";
-    private static final String AES_TRANSFORMATION = "AES/GCM/NoPadding";
-    private static final int KEY_SIZE_BITS = 128;
-    private static final int GCM_NONCE_LENGTH_BYTES = 12;
-    private static final String CHARSET_NAME = "UTF-8";
-    private static final byte[] SECRET_KEY_MESSAGE_BODY_SALT_AS_BYTES = Base64.getDecoder().decode(CONFIG.getMESSAGE_BODY_ENCRYPTION_SALT());
+    private final Config config;
+    private final String AES_ALGORITHM = "AES";
+    private final String AES_TRANSFORMATION = "AES/GCM/NoPadding";
+    private final int KEY_SIZE_BITS = 128;
+    private final int GCM_NONCE_LENGTH_BYTES = 12;
+    private final String CHARSET_NAME = "UTF-8";
+    private byte[] SECRET_KEY_MESSAGE_BODY_SALT_AS_BYTES;
 
-    public static String encrypt(String textForEncryption, SecretKey secretKey) throws Exception {
+    public EncryptionService(Config config) {
+        this.config = config;
+        this.SECRET_KEY_MESSAGE_BODY_SALT_AS_BYTES = Base64.getDecoder().decode(this.config.getMessageBodyEncryptionSalt());
+    }
+
+    public String encrypt(String textForEncryption, SecretKey secretKey) throws Exception {
         var cipher = Cipher.getInstance(AES_TRANSFORMATION);
-        var nonce = generateNonce();
+        var nonce = this.generateNonce();
 
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, new GCMParameterSpec(KEY_SIZE_BITS, nonce));
 
@@ -31,7 +39,7 @@ public class EncryptionService {
         return Base64.getEncoder().encodeToString(combined);
     }
 
-    public static String decrypt(String textForDecryption, SecretKey secretKey) throws Exception {
+    public String decrypt(String textForDecryption, SecretKey secretKey) throws Exception {
         var combined = Base64.getDecoder().decode(textForDecryption);
         var nonce = new byte[GCM_NONCE_LENGTH_BYTES];
         var encryptedBytes = new byte[combined.length - GCM_NONCE_LENGTH_BYTES];
@@ -47,24 +55,30 @@ public class EncryptionService {
         return new String(decryptedBytes, CHARSET_NAME);
     }
 
-    private static byte[] generateNonce() {
+    private byte[] generateNonce() {
         var secureRandom = new SecureRandom();
         var nonce = new byte[GCM_NONCE_LENGTH_BYTES];
+
         secureRandom.nextBytes(nonce);
+
         return nonce;
     }
 
-    static SecretKey generateSecretKey() throws Exception {
-        var keyGenerator = KeyGenerator.getInstance(AES_ALGORITHM);
+    public SecretKey generateSecretKey() throws Exception {
+        var keyGenerator = KeyGenerator.getInstance(this.AES_ALGORITHM);
+
         keyGenerator.init(KEY_SIZE_BITS);
+
         return keyGenerator.generateKey();
     }
 
-    static SecretKey getSecretKeyWithSalt(SecretKey secretKey) {
+    public SecretKey getSecretKeyWithSalt(SecretKey secretKey) {
         var secretKeyInBytes = secretKey.getEncoded();
         var finalKey = new byte[SECRET_KEY_MESSAGE_BODY_SALT_AS_BYTES.length + secretKeyInBytes.length];
+
         System.arraycopy(secretKeyInBytes, 0, finalKey, 0, secretKeyInBytes.length);
         System.arraycopy(SECRET_KEY_MESSAGE_BODY_SALT_AS_BYTES, 0, finalKey, secretKeyInBytes.length, SECRET_KEY_MESSAGE_BODY_SALT_AS_BYTES.length);
-        return new SecretKeySpec(finalKey, 0, finalKey.length, AES_ALGORITHM);
+
+        return new SecretKeySpec(finalKey, 0, finalKey.length, this.AES_ALGORITHM);
     }
 }

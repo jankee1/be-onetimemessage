@@ -9,6 +9,6 @@ public class ValidOptionalStringLengthClass implements ConstraintValidator<Valid
     private static final Config CONFIG = new Config();
     @Override
     public boolean isValid(String optionalString, ConstraintValidatorContext context) {
-        return Objects.nonNull(optionalString) && optionalString.length() <= CONFIG.getMAX_BODY_LENGTH();
+        return Objects.nonNull(optionalString) && optionalString.length() <= CONFIG.getMaxBodyLength();
     }
 }
