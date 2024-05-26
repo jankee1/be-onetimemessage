@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,10 +15,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
+
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -29,8 +27,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                   HttpHeaders headers,
                                                                   HttpStatusCode status,
                                                                   WebRequest request) {
-        Map<String, String> errors = new HashMap<>();
-        BindingResult bindingResult = ex.getBindingResult();
+        var errors = new HashMap<String, String>();
+        var bindingResult = ex.getBindingResult();
         for (FieldError fieldError : bindingResult.getFieldErrors()) {
             errors.put(fieldError.getField(), fieldError.getDefaultMessage());
         }
@@ -44,8 +42,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ResponseEntity<Object> handleBindException(BindException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        Map<String, String> errors = new HashMap<>();
-        BindingResult bindingResult = ex.getBindingResult();
+        var errors = new HashMap<String, String>();
+        var bindingResult = ex.getBindingResult();
         for (FieldError fieldError : bindingResult.getFieldErrors()) {
             errors.put(fieldError.getField(), fieldError.getDefaultMessage());
         }
@@ -58,9 +56,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex,
-                                                                     WebRequest request) {
-        Map<String, String> errors = new HashMap<>();
+    public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex) {
+        var errors = new HashMap<String, String>();
         Set<ConstraintViolation<?>> constraintViolations = ex.getConstraintViolations();
 
         for (ConstraintViolation<?> violation : constraintViolations) {

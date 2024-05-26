@@ -1,9 +1,10 @@
 package com.example.onetimemessage.onetimemessage.model;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.crypto.SecretKey;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -15,5 +16,7 @@ public class MessageModel {
     SecretKey secretKey;
     String emailRecipient;
     Boolean emailSentSuccessfully;
+    LocalDateTime meetingDate;
+    CityModel meetingPlace;
     int order;
 }
