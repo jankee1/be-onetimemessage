@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class WeatherModel {
-    Double minTemp;
-    Double maxTemp;
+    int minTemp;
+    int maxTemp;
     LocalDateTime date;
 }

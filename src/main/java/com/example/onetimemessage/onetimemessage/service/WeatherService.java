@@ -21,6 +21,7 @@ public class WeatherService {
     private final WeatherMapper weatherMapper;
     private final String baseUrl = "https://api.openweathermap.org/data/2.5/";
     private final Config config;
+    private final Double constKelvin = 273.15;
 
     public WeatherService(WeatherMapper weatherMapper, Config config) {
         this.weatherMapper = weatherMapper;
@@ -62,11 +63,10 @@ public class WeatherService {
                     .stream()
                     .filter(dto -> dto.getDate().equals(uniqueDate))
                     .toList();
+            var maxTempC = filtered.stream().mapToDouble(WeatherDto::getTempKelvin).max().orElse(this.constKelvin) - this.constKelvin;
+            var minTempC = filtered.stream().mapToDouble(WeatherDto::getTempKelvin).min().orElse(this.constKelvin) - this.constKelvin;
 
-            var maxTemp = filtered.stream().mapToDouble(WeatherDto::getTempKelvin).max().orElse(0.0);
-            var minTemp = filtered.stream().mapToDouble(WeatherDto::getTempKelvin).min().orElse(0.0);
-
-            models.add(this.weatherMapper.rawDataToModel(minTemp, maxTemp, uniqueDate));
+            models.add(this.weatherMapper.rawDataToModel( (int)  Math.round(minTempC),  (int)  Math.round(maxTempC), uniqueDate));
         });
         return models;
     }
